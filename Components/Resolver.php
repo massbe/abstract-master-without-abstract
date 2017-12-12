@@ -28,9 +28,6 @@ class Resolver
         }
     }
 
-//    метод валидирует массив привязок и устанавливает список сервисов или
-//    бросает исключение, в случае невалидности
-
     public function validateArray($array)
     {
         foreach ($array as $key => $item) {
