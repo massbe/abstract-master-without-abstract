@@ -4,6 +4,6 @@ return [
     'services' => [
         'Monolog' => 'Monolog\Logger'],
     'singletonService' => [
-        'Db' => 'Db\Mysql'
+        'Db' => 'Db\Mongo'
     ]
 ];

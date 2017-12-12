@@ -1,16 +1,21 @@
 <?php
 include_once ("vendor/autoload.php");
-$config = include_once ('Components/bind.php');
+
+$config = include_once ('Components/Config/bind.php');
 
 use Components\Resolver;
 
 $resolve = new Resolver($config);
 
-$db = $resolve->get('Db');
-$db1 = $resolve->get('Db');
+try {
+    $db1 = $resolve->get('Db');
+    $db2 = $resolve->get('Db');
 
-$logger1 = $resolve->get('Monolog');
-$logger2 = $resolve->get('Monolog');
+    $service1 = $resolve->get('Monolog');
+    $service2 = $resolve->get('Monolog');
+} catch (Exception $error) {
+    echo $error->getMessage();
+}
 
-var_dump($db === $db1);
-var_dump($logger1 === $logger2);
+var_dump($db1 === $db2);
+var_dump($service1 === $service2);
