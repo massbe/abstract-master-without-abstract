@@ -2,8 +2,12 @@
 
 return [
     'services' => [
-        'Monolog' => 'Monolog\Logger'],
+        'Monolog' => 'Monolog\Logger',
+        'Horosho' => 'Horosho\Ohoho'
+    ],
     'singletonService' => [
-        'Db' => 'Db\Mongo'
+        'Db' => 'Db\Mysql',
+        'Gb' => 'Gb\Cool',
+        'Reebook' => 'Nike'
     ]
 ];

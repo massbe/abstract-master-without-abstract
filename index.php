@@ -1,21 +1,28 @@
 <?php
-include_once ("vendor/autoload.php");
+include_once ('vendor/autoload.php');
+ini_set("xdebug.default_enable", "0");
 
-$config = include_once ('Components/Config/bind.php');
-
+$bind = include_once ('Components/Config/bind.php');
 use Components\Resolver;
 
-$resolve = new Resolver($config);
-
 try {
-    $db1 = $resolve->get('Db');
-    $db2 = $resolve->get('Db');
+    $mysql = new Resolver($bind);
+    $mysql->bind('Db');
+    $mysql->bind('Monolog');
 
-    $service1 = $resolve->get('Monolog');
-    $service2 = $resolve->get('Monolog');
-} catch (Exception $error) {
-    echo $error->getMessage();
+    $result1 = $mysql->get('Db');
+    $result2 = $mysql->get('Db');
+
+    $monolog1 = $mysql->get('Monolog');
+    $monolog2 = $mysql->get('Monolog');
+
+
+    var_dump($result1);
+    var_dump($result2);
+    var_dump($monolog1);
+    var_dump($monolog2);
+    var_dump($result1 === $result2);
+    var_dump($monolog1 === $monolog2);
+} catch (Exception $e) {
+    $e->getMessage();
 }
-
-var_dump($db1 === $db2);
-var_dump($service1 === $service2);

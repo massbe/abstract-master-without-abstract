@@ -5,66 +5,54 @@ namespace Components;
 
 class Resolver
 {
-    private $services;
-    private $singletonServices;
-    private $singletonInstances;
+    private $workServices;
+    private $bindFromFileParametrs;
+    private $instance;
 
-    public function __construct(array $array)
+    public function __construct(array $arrayBindFromFile)
     {
-        $this->validateArray($array);
+        $this->bindFromFileParametrs = $arrayBindFromFile;
     }
 
-    public function get(string $service)
+    public function bind(string $abstract)
     {
-        if ((!array_key_exists($service, $this->services)) && (!array_key_exists($service, $this->singletonServices))){
-            throw new \Exception("Заданы значения не найдены в конфигурационном файле");
+        $this->workServices[$abstract] = $this->getClassBind($abstract);
+    }
+
+    public function getClassBind(string $abstract)
+    {
+        if (!$this->fullNameClassToCreate($abstract)) {
+            throw new \Exception('Нельзя создать такой класс');
+        }
+
+        $concreteClass = $this->fullNameClassToCreate($abstract);
+        return function ($params = []) use ($concreteClass) {
+            return new $concreteClass($params);
+        };
+    }
+
+    public function fullNameClassToCreate(string $classPath): string
+    {
+        foreach ($this->bindFromFileParametrs as $services) {
+            if (key($services) == $classPath) {
+                $classForTest = "Components\\" . $services[$classPath];
+                if (!class_exists($classForTest)) {
+                    throw new \Exception('Нельзя создать такой класс');
+                }
+                return $classForTest;
+            }
+        }
+    }
+
+    public function get(string $abstract, array $arrayParametrsForClass = null)
+    {
+        if ($abstract == key($this->bindFromFileParametrs['singletonService'])) {
+            if (!isset($this->instance[$abstract])) {
+                $this->instance[$abstract] = $this->workServices[$abstract]($arrayParametrsForClass);
+            }
+            return $this->instance[$abstract];
         } else {
-            if (array_key_exists($service, $this->services)) {
-                try {
-                    return $this->create($service);
-                } catch (\Exception $error) {
-                    echo $error->getMessage();
-                }
-            } else {
-                try {
-                    return $this->createSingleton($service);
-                } catch (\Exception $error) {
-                    echo $error->getMessage();
-                }
-            }
+            return $this->workServices[$abstract]($arrayParametrsForClass);
         }
-    }
-
-    public function validateArray($array)
-    {
-        foreach ($array as $key => $item) {
-            if ($key == 'services') {
-                $this->services = $item;
-            } else {
-                $this->singletonServices = $item;
-            }
-        }
-    }
-
-    public function create($service)
-    {
-        $serviceTestAndCreate = "Components\\".$this->services[$service];
-        if(!class_exists($serviceTestAndCreate)){
-            throw new \Exception('Такой класс невозможно создать - экземпляр нигде не найден');
-        }
-        return new $serviceTestAndCreate();
-    }
-
-    public function createSingleton($service)
-    {
-        $serviceSingleton = "Components\\".$this->singletonServices[$service];
-        if(!class_exists($serviceSingleton)){
-            throw new \Exception('Такой Синглтонкласс невозможно создать - экземпляр нигде не найден');
-        }
-
-        if (is_null($this->singletonInstances[$service])) {
-            return $this->singletonInstances[$service] = new $serviceSingleton();
-        }
-        return $this->singletonInstances[$service];
     }
 }
