@@ -29,6 +29,7 @@ class Resolver
         return function ($params = []) use ($concreteClass) {
             return new $concreteClass($params);
         };
+
     }
 
     public function fullNameClassToCreate(string $classPath): string
@@ -46,6 +47,7 @@ class Resolver
 
     public function get(string $abstract, array $arrayParametrsForClass = null)
     {
+        $this->bind($abstract);
         if ($abstract == key($this->bindFromFileParametrs['singletonService'])) {
             if (!isset($this->instance[$abstract])) {
                 $this->instance[$abstract] = $this->workServices[$abstract]($arrayParametrsForClass);

@@ -7,8 +7,6 @@ use Components\Resolver;
 
 try {
     $mysql = new Resolver($bind);
-    $mysql->bind('Db');
-    $mysql->bind('Monolog');
 
     $result1 = $mysql->get('Db');
     $result2 = $mysql->get('Db');
